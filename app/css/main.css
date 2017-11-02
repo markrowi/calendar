@@ -1,0 +1,96 @@
+.content {
+    padding: 20px
+}
+
+.rooCalendar table {
+    width: 100%;
+    table-layout: fixed;
+    border:1px #ddd solid;
+}
+
+.rooCalendar th, .rooCalendar td {
+    border-style: solid;
+    border-width: 1px;
+    padding: 0;
+    vertical-align: top;
+    border-color: #ddd;
+    display: table-cell;
+    
+}
+
+.rooCalendar td {
+    border-bottom: none;
+}
+
+
+
+
+
+.rooCalendar th {
+    height: 30px;
+    vertical-align: middle;
+    color:white;
+    background: #9675ce;
+    border-color: #9675ce;
+}
+
+.rooCalendar th.rc-minor, .rooCalendar .rc-minor td {
+    border-top-style:dotted;
+}
+
+.rc-label {
+    width:60px;
+}
+.rc-label::before {
+
+}
+
+.rc-label.time{
+    text-align: right;
+    padding-right:5px;
+}
+
+.rc-header th{
+    text-align: center;
+}
+
+.rc-half {
+    /* content:"&nbsp"; */
+}
+
+.rc-event-container {
+    /* background-color: green; */
+    opacity: .9;
+    position: absolute;
+    top: 22px;
+    left: 76px;
+    right: 15px;
+    bottom: 0;
+}
+
+.rc-event-list {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.event {
+    width:152px;
+    height: 105px;
+    background-color: #03a9f3;
+    position: absolute;
+    cursor: pointer;
+    box-sizing:border-box;
+}
+
+.event.focused{
+    outline: rgb(144, 144, 252) 1px solid;
+}
+
+.rc-col-header {
+    cursor: pointer;
+}
+
+.rc-col-header.focused {
+    opacity: .9;
+}
