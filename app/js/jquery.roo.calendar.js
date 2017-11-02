@@ -60,8 +60,11 @@
     
                 if(e.which===67 && e.ctrlKey === true){
                     let $f = $(self.element).find('.event.focused');
-                    
-                    self.clipboard = [{y:$f.data('pos-y'), x:$f.data('pos-x')}]
+                    self.clipboard = [];
+                    $.each($f, function(index, ev){
+                        self.clipboard.push({y:$(ev).data('pos-y'), x:$(ev).data('pos-x')})
+                    })
+                    // self.clipboard = [{y:$f.data('pos-y'), x:$f.data('pos-x')}]
                     console.log(self.clipboard)
                 }
                 if(e.which===86 && e.ctrlKey === true){
@@ -163,6 +166,8 @@
                         let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
                         let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
                         $this.attr('data-pos-y', yPos);
+                        $this.data({'pos-y':yPos, 'pos-x':xPos});
+                        
                         $this.attr('data-pos-x', xPos);
                         console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
                     }
@@ -259,7 +264,9 @@
         add:function(x,y, timelenght){
             console.log(x,y, timelenght)
             let col = this.settings.resource || this.settings.days;
-            let $event = $('<div class="event"></div>');
+            let $event = $(`<div class="event">
+            
+            </div>`);
             let self = this;
             let position = {
                 top: (y*self.settings.cellHeight) + 'px',
@@ -280,6 +287,7 @@
                     let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
                     $this.attr('data-pos-y', yPos);
                     $this.attr('data-pos-x', xPos);
+                    $this.data({'pos-y':yPos, 'pos-x':xPos});
                     console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
                 }
             }).resizable({
