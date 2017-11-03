@@ -81,10 +81,21 @@
     position: absolute;
     cursor: pointer;
     box-sizing:border-box;
+    padding: 5px;
+}
+
+.remove-event{
+    padding-right: 5px;
+    opacity: 0;
+    transition: .5s ease all;
+}
+
+.event:hover .remove-event {
+    opacity: 1;
 }
 
 .event.focused{
-    outline: rgb(144, 144, 252) 1px solid;
+    outline: #9675ce 2px solid;
 }
 
 .rc-col-header {

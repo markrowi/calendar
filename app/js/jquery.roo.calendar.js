@@ -21,6 +21,7 @@
             "Sunday"
         ],
         resource: undefined,
+        timePos :[],
         invalidPeriod: "Invalid period.",
         invalidPosition: "Invalid position.",
         removePeriod: "Remove this period ?",
@@ -44,15 +45,31 @@
          */
         init: function () {
             let self = this;
-            $(this.element).on('mousedown', '.event', function(){
+            $(this.element).on('mousedown', '.event', function(e){
                 $('.event').removeClass('focused');
                 $(this).addClass('focused');
+                e.stopPropagation();
             })
             
             $(this.element).on('click','.rc-col-header', function(){
                 $('.rc-col-header').removeClass('focused');
                 $(this).addClass('focused');
             })
+
+            $(this.element).on('click','.remove-event', function(){
+                $(this).closest('.event').remove();
+            })
+
+
+
+            $(this.element).on('mousedown', '.rc-event-list', function(e){
+                const y = Math.floor(e.offsetY/self.settings.cellHeight);
+                const x = Math.floor(e.offsetX/self.settings.cellWidth);
+                // console.log(Math.floor(e.offsetY/self.settings.cellHeight), Math.floor(e.offsetX/self.settings.cellWidth))
+                self.add(x, y, 1)
+            })
+            
+            
             
             $(this.element).addClass(pluginName);
 
@@ -62,7 +79,10 @@
                     let $f = $(self.element).find('.event.focused');
                     self.clipboard = [];
                     $.each($f, function(index, ev){
-                        self.clipboard.push({y:$(ev).data('pos-y'), x:$(ev).data('pos-x')})
+                        let height = $(ev)[0].clientHeight/self.settings.cellHeight
+                      
+                        // console.log();
+                        self.clipboard.push({y:$(ev).data('pos-y'), x:$(ev).data('pos-x'), height:height})
                     })
                     // self.clipboard = [{y:$f.data('pos-y'), x:$f.data('pos-x')}]
                     console.log(self.clipboard)
@@ -72,49 +92,15 @@
                     
                     // self.clipboard = [{y:$f.data('pos-y'), x:$f.data('pos-x')}]
                     let xPos = $('.rc-col-header.focused').data('pos');
-                    if(self.clipboard.length>0 && xPos){
+                    if(self.clipboard.length>0 && xPos!==undefined){
                         let copied = self.clipboard[0]
-                        self.add(xPos, copied.y,null)
+                        self.add(xPos, copied.y,copied.height)
                         console.log('paste')
                     }
                    
                 }
                 
             })
-
-           
-
-
-            // if (this.settings.mode === "edit") {
-            //     // bind event
-            //     $(this.element).on("click", ".jqs-wrapper", function (event) {
-            //         // add a new selection
-            //         if ($(event.target).hasClass("jqs-period") || $(event.target).parents(".jqs-period").length > 0) {
-            //             return false;
-            //         }
-
-            //         var position = Math.round(event.offsetY / 20);
-            //         if (position >= 48) {
-            //             position = 47;
-            //         }
-
-            //         $this.add($(this), "id_" + event.timeStamp, position, 1);
-            //     });
-
-            //     // delete a selection
-            //     if ($this.settings.confirm) {
-            //         $(this.element).on("click", ".jqs-remove", function () {
-            //             var element = $(this).parents(".jqs-period");
-            //             $this.dialogOpen($this.settings.removePeriod, function () {
-            //                 element.remove();
-            //             });
-            //         });
-            //     } else {
-            //         $(this.element).on("click", ".jqs-remove", function () {
-            //             $(this).parents(".jqs-period").remove();
-            //         });
-            //     }
-            // }
 
             this.create();
           
@@ -142,42 +128,46 @@
 
             let $tbody = $table.find('tbody');
             for(t = this.settings.fromTime;t<=this.settings.toTime; t++){
+                self.settings.timePos.push(`${t}:00`);
+                self.settings.timePos.push(`${t}:30`);
+                
                 $tbody.append(`<tr class="rc-label" data-time="${t}"><td class="rc-label time" style="height:${this.settings.cellHeight}px">${this.formatHour(t)}</td>${$colContent}</tr>`)
                 $tbody.append(`<tr class="rc-label rc-minor" data-time="${t + .5}"><td class="rc-label rc-half" style="height:${this.settings.cellHeight}px">&nbsp</td>${$colContent}</tr>`)
             }
             $(`<div class="rc-event-container">
                 <div class="rc-event-list">
-                    <div class="event">1</div><div class="event">2</div>
+                   
                 </div>
                 </div>`).css({'top':self.settings.cellHeight+1}).appendTo(this.element);
          
             $table.appendTo(this.element)
             var x = Math.ceil($('.rc-event-container').width()/ (this.settings.resource || this.settings.days).length);
-            $('.event').css('width',(x-3)+'px');
+            self.settings.cellWidth = x;
+            // $('.event').css('width',(x-3)+'px');
             
 
-            $.each($('.event'), function(index, eve){
-                console.log(eve)
-                $(eve).draggable({
-                    grid:[x,self.settings.cellHeight], 
-                    containment:'parent',
-                    drag:function(){
-                        let $this = $(this);
-                        let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
-                        let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
-                        $this.attr('data-pos-y', yPos);
-                        $this.data({'pos-y':yPos, 'pos-x':xPos});
+            // $.each($('.event'), function(index, eve){
+            //     console.log(eve)
+            //     $(eve).draggable({
+            //         grid:[x,self.settings.cellHeight], 
+            //         containment:'parent',
+            //         drag:function(){
+            //             let $this = $(this);
+            //             let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
+            //             let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
+            //             $this.attr('data-pos-y', yPos);
+            //             $this.data({'pos-y':yPos, 'pos-x':xPos});
                         
-                        $this.attr('data-pos-x', xPos);
-                        console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
-                    }
-                }).resizable({
-                    grid:[0,self.settings.cellHeight],
-                    handles: "n, s",
-                    containment:'parent'
-                })
+            //             $this.attr('data-pos-x', xPos);
+            //             console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
+            //         }
+            //     }).resizable({
+            //         grid:[0,self.settings.cellHeight],
+            //         handles: "n, s",
+            //         containment:'parent'
+            //     })
     
-            })
+            // })
 
            
         },
@@ -262,38 +252,51 @@
 
         },
         add:function(x,y, timelenght){
+            
             console.log(x,y, timelenght)
             let col = this.settings.resource || this.settings.days;
             let $event = $(`<div class="event">
-            
+                <span></span><div class="remove-event pull-right">x</div>
             </div>`);
             let self = this;
             let position = {
                 top: (y*self.settings.cellHeight) + 'px',
                 left: (x*self.settings.cellWidth) + 'px',
-                width:(self.settings.cellWidth - 3) + 'px'
+                width:(self.settings.cellWidth - 3) + 'px',
+                height: (timelenght*self.settings.cellHeight) + 'px'
             }
             
             $event.css(position)
             $event.attr('data-pos-y', y);
             $event.attr('data-pos-x', x);
+            $event.find('span').text(self.settings.timePos[y] + ' - ' + self.settings.timePos[y + timelenght])
             $(this.element).find('.rc-event-list').append($event);
             $event.draggable({
                 grid:[self.settings.cellWidth,self.settings.cellHeight], 
                 containment:'parent',
                 drag:function(){
                     let $this = $(this);
+
                     let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
                     let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
+                    let height = Math.round($(this).height()/self.settings.cellHeight);
                     $this.attr('data-pos-y', yPos);
                     $this.attr('data-pos-x', xPos);
                     $this.data({'pos-y':yPos, 'pos-x':xPos});
-                    console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
+                    $event.find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[yPos + height])
+                    // console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
                 }
             }).resizable({
                 grid:[0,self.settings.cellHeight],
                 handles: "n, s",
-                containment:'parent'
+                containment:'parent',
+                resize:function(){
+                    let height = Math.round($(this).height()/self.settings.cellHeight);
+                    let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
+
+                    $(this).find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[height])
+                }
+
             })
             
         },
