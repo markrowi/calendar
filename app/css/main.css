@@ -1,7 +1,15 @@
+
+body{
+    background-color: #E8E9EC;
+}
 .content {
     padding: 20px
 }
 
+.rooCalendar {
+    box-shadow: 0px 3px 13px #33333329;
+    background-color: #fff;
+}
 .rooCalendar table {
     width: 100%;
     table-layout: fixed;
@@ -15,6 +23,7 @@
     vertical-align: top;
     border-color: #ddd;
     display: table-cell;
+    box-sizing: border-box;
     
 }
 
@@ -81,7 +90,12 @@
     position: absolute;
     cursor: pointer;
     box-sizing:border-box;
-    padding: 5px;
+    /* padding: 5px; */
+    border-radius: 5px;
+}
+
+.event span {
+    margin-left: 5px;
 }
 
 .remove-event{
@@ -95,7 +109,9 @@
 }
 
 .event.focused{
-    outline: #9675ce 2px solid;
+    /* outline: 2px solid; */
+    box-shadow: 0px 0px 0px 2px;
+    
 }
 
 .rc-col-header {

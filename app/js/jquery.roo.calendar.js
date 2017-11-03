@@ -134,6 +134,7 @@
                 $tbody.append(`<tr class="rc-label" data-time="${t}"><td class="rc-label time" style="height:${this.settings.cellHeight}px">${this.formatHour(t)}</td>${$colContent}</tr>`)
                 $tbody.append(`<tr class="rc-label rc-minor" data-time="${t + .5}"><td class="rc-label rc-half" style="height:${this.settings.cellHeight}px">&nbsp</td>${$colContent}</tr>`)
             }
+            self.settings.timePos.push(`${this.settings.toTime + 1}:00`);
             $(`<div class="rc-event-container">
                 <div class="rc-event-list">
                    
@@ -143,32 +144,7 @@
             $table.appendTo(this.element)
             var x = Math.ceil($('.rc-event-container').width()/ (this.settings.resource || this.settings.days).length);
             self.settings.cellWidth = x;
-            // $('.event').css('width',(x-3)+'px');
-            
-
-            // $.each($('.event'), function(index, eve){
-            //     console.log(eve)
-            //     $(eve).draggable({
-            //         grid:[x,self.settings.cellHeight], 
-            //         containment:'parent',
-            //         drag:function(){
-            //             let $this = $(this);
-            //             let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
-            //             let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
-            //             $this.attr('data-pos-y', yPos);
-            //             $this.data({'pos-y':yPos, 'pos-x':xPos});
-                        
-            //             $this.attr('data-pos-x', xPos);
-            //             console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
-            //         }
-            //     }).resizable({
-            //         grid:[0,self.settings.cellHeight],
-            //         handles: "n, s",
-            //         containment:'parent'
-            //     })
-    
-            // })
-
+          
            
         },
         formatHour: function (hour) {
@@ -279,7 +255,7 @@
 
                     let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
                     let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
-                    let height = Math.round($(this).height()/self.settings.cellHeight);
+                    let height = Math.round($(this)[0].clientHeight/self.settings.cellHeight);
                     $this.attr('data-pos-y', yPos);
                     $this.attr('data-pos-x', xPos);
                     $this.data({'pos-y':yPos, 'pos-x':xPos});
@@ -290,11 +266,13 @@
                 grid:[0,self.settings.cellHeight],
                 handles: "n, s",
                 containment:'parent',
+                minHeight:self.settings.cellHeight,
                 resize:function(){
-                    let height = Math.round($(this).height()/self.settings.cellHeight);
+                    
+                    let height = Math.round($(this)[0].clientHeight/self.settings.cellHeight);
                     let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
-
-                    $(this).find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[height])
+                    console.log(self.settings.cellHeight)
+                    $(this).find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[height + yPos])
                 }
 
             })

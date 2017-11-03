@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-md-12">
                 <p>
-                        Employee/Resource Appointment Schedule - day view
+                        Employee Time Schedule - single employee for one week                        
                 </p>
             </div>
         </div>
@@ -33,18 +33,18 @@
             <div class="col-md-12">
                 <br/>
                 <p>
-                    To copy event, click an event and CTRL + C (copy) then click a header where you want to paste it and click CTRL + V (paste)
+                        To copy event, click an event and CTRL + C (copy) then click a header where you want to paste it and click CTRL + V (paste)
                 </p>
                 <p>
-                    You can transfer event through resources
+                    You can transfer event through days
                 </p>
 
                 <p>
                     Click to add event.
                 </p>
                 <p>
-                    <a href="/employeeWeekly.html"> Employee Time Schedule - Week view </a>
-                </p>
+                        <a href="/">Employee/Resource Appointment Schedule - day view</a>
+                    </p>
             </div>
         </div>
     </div>
@@ -55,7 +55,19 @@
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.roo.calendar.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $('.app').rooCalendar({fromTime:7,toTime:14});
+                // $('.app').rooCalendar({fromTime:7,toTime:14});
+                
+                $('.app').rooCalendar('addEntry',4,2,4);
+                $('.app').rooCalendar('addEntry',1,5,8);
+
+                $('.app').rooCalendar('addEntry',2,7,5);
+            })
+        </script>
+
     </footer>
 </body>
 </html>
