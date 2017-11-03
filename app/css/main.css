@@ -98,6 +98,7 @@ body{
     box-sizing:border-box;
     /* padding: 5px; */
     border-radius: 5px;
+    border: 1px solid white;
 }
 
 .event span {
@@ -134,4 +135,8 @@ body{
 
 .rc-col-header.focused {
     opacity: .9;
+}
+
+.ui-resizable-s::after{
+    content: "="
 }

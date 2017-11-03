@@ -8,5 +8,6 @@ $(document).ready(function(){
     
     $('.app').rooCalendar('addEntry',4,2,4);
     $('.app').rooCalendar('addEntry',1,5,8);
+    $('.app').rooCalendar('addEntry',1,3,5);
     $('.app').rooCalendar('addEntry',7,7,5);
 })

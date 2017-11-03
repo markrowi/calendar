@@ -234,15 +234,99 @@
 
             return hour;
         },
-        resize:function(){
+        resizeEvent:function(event){
+            let $event = $(event);
+            const pStart = event.offsetTop;
+            const pEnd = event.clientHeight + event.offsetTop;
+            let colCount = 1;
+            let self = this;
 
+            $event.css('width',this.settings.cellWidth- 3) + 'px',
+
+            $eventGroup = $(this.element).find(`.event[data-pos-x="${$event.data('pos-x')}"]`);
+            let group = [];
+           $.each($eventGroup, function(index, ev){   
+                let $ev = $(ev);
+               const cStart = ev.offsetTop;
+               const cEnd = ev.clientHeight + ev.offsetTop;
+               $ev.css('width',self.settings.cellWidth- 3) + 'px';
+               if(ev != event){
+                    if((pStart<=cStart && pEnd<=cEnd) || (pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
+                        console.log(pStart, cStart, pEnd, cEnd)
+                        group.push(ev);
+                    }
+               }else{
+                   console.log('same')
+               }
+           })
+           group.push(event);
+           colCount = group.length;
+           colWidth = Math.floor(self.settings.cellWidth/colCount);
+           $.each(group, function(i,ge){
+                let $ge = $(ge);
+                $ge.css({
+                    'width':colWidth + 'px',
+                    'margin-left': (colWidth * i) + 'px'
+                });
+
+           })
+           
         },
-        eventSize:function(){
+        eventResizeWidth:function(){
+            let self = this;
+            $.each($('.event'), function(index, event){
 
+            
+                let $event = $(event);
+                const pStart = event.offsetTop;
+                const pEnd = event.clientHeight + event.offsetTop;
+                let colCount = 1;
+                
+
+                $event.css('width',self.settings.cellWidth- 3) + 'px',
+
+                $eventGroup = $(self.element).find(`.event[data-pos-x="${$event.data('pos-x')}"]`);
+                let group = [];
+            $.each($eventGroup, function(index, ev){   
+                    let $ev = $(ev);
+                const cStart = ev.offsetTop;
+                const cEnd = ev.clientHeight + ev.offsetTop;
+                $ev.css('width',self.settings.cellWidth- 3) + 'px';
+                if(ev != event){
+                        if((pStart<=cStart && pEnd<=cEnd) || (pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
+                            console.log(pStart, cStart, pEnd, cEnd)
+                            group.push(ev);
+                        }
+                }else{
+                    console.log('same')
+                }
+            })
+            group.push(event);
+            colCount = group.length;
+            colWidth = Math.floor(self.settings.cellWidth/colCount);
+            $.each(group, function(i,ge){
+                    let $ge = $(ge);
+                    $ge.css({
+                        'width':colWidth + 'px',
+                        'margin-left': (colWidth * i) + 'px'
+                    });
+
+            })
+            })
+        },
+        printDetails:function(event){
+            $event = $(event)
+            let yPos = Math.round(event.offsetTop/this.settings.cellHeight);
+            let xPos = Math.round(event.offsetLeft/this.settings.cellWidth);
+            let height = Math.round(event.clientHeight/this.settings.cellHeight);
+            $event.attr('data-pos-y', yPos);
+            $event.attr('data-pos-x', xPos);
+            $event.data({'pos-y':yPos, 'pos-x':xPos});
+            $event.find('span').text(this.settings.timePos[yPos] + ' - ' + this.settings.timePos[yPos + height])
         },
         add:function(x,y, timelenght){
             
-            console.log(x,y, timelenght)
+            
             let col = this.settings.resource || this.settings.days;
             let $event = $(`<div class="event">
                 <span></span><div class="remove-event pull-right">x</div>
@@ -265,15 +349,11 @@
                 containment:'parent',
                 drag:function(){
                     let $this = $(this);
-
-                    let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
-                    let xPos = Math.round(this.offsetLeft/self.settings.cellWidth);
-                    let height = Math.round($(this)[0].clientHeight/self.settings.cellHeight);
-                    $this.attr('data-pos-y', yPos);
-                    $this.attr('data-pos-x', xPos);
-                    $this.data({'pos-y':yPos, 'pos-x':xPos});
-                    $event.find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[yPos + height])
-                    // console.log(this.offsetTop, this.offsetLeft, col[xPos], yPos)
+                    self.printDetails(this);
+                },
+                stop:function(){
+                    self.eventResizeWidth();
+                    console.log('drag stop')
                 }
             }).resizable({
                 grid:[0,self.settings.cellHeight],
@@ -281,13 +361,12 @@
                 containment:'parent',
                 minHeight:self.settings.cellHeight,
                 resize:function(){
-                    
-                    let height = Math.round($(this)[0].clientHeight/self.settings.cellHeight);
-                    let yPos = Math.round(this.offsetTop/self.settings.cellHeight);
-                    console.log(self.settings.cellHeight)
-                    $(this).find('span').text(self.settings.timePos[yPos] + ' - ' + self.settings.timePos[height + yPos])
+                    self.printDetails(this);
+                },
+                stop:function(){
+                    self.eventResizeWidth();
+                    console.log('resize stop')
                 }
-
             })
             
         },
