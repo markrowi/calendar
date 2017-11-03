@@ -60,9 +60,18 @@
                 $(this).closest('.event').remove();
             })
 
+           
+            $(this.element).on('click', '.event', function(e){
+                e.stopPropagation();
+            })
+            $(this.element).on('click', '.rc-event-list', function(e){
+                $('.event').removeClass('focused');
+            })
 
-
-            $(this.element).on('mousedown', '.rc-event-list', function(e){
+            $(this.element).on('dblclick', '.event', function(e){
+                e.stopPropagation();
+            })
+            $(this.element).on('dblclick', '.rc-event-list', function(e){
                 const y = Math.floor(e.offsetY/self.settings.cellHeight);
                 const x = Math.floor(e.offsetX/self.settings.cellWidth);
                 // console.log(Math.floor(e.offsetY/self.settings.cellHeight), Math.floor(e.offsetX/self.settings.cellWidth))
@@ -135,13 +144,17 @@
                 $tbody.append(`<tr class="rc-label rc-minor" data-time="${t + .5}"><td class="rc-label rc-half" style="height:${this.settings.cellHeight}px">&nbsp</td>${$colContent}</tr>`)
             }
             self.settings.timePos.push(`${this.settings.toTime + 1}:00`);
+
+            var $rcContent = $('<div class="rc-content"></div>')
+
             $(`<div class="rc-event-container">
-                <div class="rc-event-list">
-                   
-                </div>
-                </div>`).css({'top':self.settings.cellHeight+1}).appendTo(this.element);
+                <div class="rc-event-list"></div>
+            </div>`).css({'top':self.settings.cellHeight+1}).appendTo($rcContent);
          
-            $table.appendTo(this.element)
+            $table.appendTo($rcContent)
+
+            $(`<div class="rc-header-content"></div>`).appendTo(this.element)
+            $rcContent.appendTo(this.element)
             var x = Math.ceil($('.rc-event-container').width()/ (this.settings.resource || this.settings.days).length);
             self.settings.cellWidth = x;
           
