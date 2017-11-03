@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calendar</title>
+
+    <link href="app/css/jquery-ui.css" rel="stylesheet">
+    <link href="app/css/bootstrap.min.css" rel="stylesheet">
+    <link href="app/css/main.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container content">
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                        Employee Time Schedule - single employee for one week                        
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="app">
+                   
+                </div>
+
+               
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <br/>
+                <p>
+                        To copy event, click an event and CTRL + C (copy) then click a header where you want to paste it and click CTRL + V (paste)
+                </p>
+                <p>
+                    You can transfer event through days
+                </p>
+
+                <p>
+                    Click to add event.
+                </p>
+                <p>
+                        <a href="/">Employee/Resource Appointment Schedule - day view</a>
+                    </p>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <footer class="footer">
+        <script type="text/javascript" src="app/js/jquery.min.js"></script>
+        <script type="text/javascript" src="app/js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="app/js/jquery.roo.calendar.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $('.app').rooCalendar({fromTime:7,toTime:14});
+                // $('.app').rooCalendar({fromTime:7,toTime:14});
+                
+                $('.app').rooCalendar('addEntry',4,2,4);
+                $('.app').rooCalendar('addEntry',1,5,8);
+
+                $('.app').rooCalendar('addEntry',2,7,5);
+            })
+        </script>
+
+    </footer>
+</body>
+</html>

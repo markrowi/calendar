@@ -6,9 +6,7 @@ $(document).ready(function(){
         resource:['Rowi', 'Domz', 'Darren', 'Dash', 'Jeff', 'Aaron','Mike', 'Jepoy','Ervin']
     });
     
-    
     $('.app').rooCalendar('addEntry',4,2,4);
     $('.app').rooCalendar('addEntry',1,5,8);
-
     $('.app').rooCalendar('addEntry',7,7,5);
 })
