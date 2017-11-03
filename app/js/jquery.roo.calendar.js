@@ -352,7 +352,7 @@
                     self.printDetails(this);
                 },
                 stop:function(){
-                    self.eventResizeWidth();
+                    // self.eventResizeWidth();
                     console.log('drag stop')
                 }
             }).resizable({
@@ -364,7 +364,7 @@
                     self.printDetails(this);
                 },
                 stop:function(){
-                    self.eventResizeWidth();
+                    // self.eventResizeWidth();
                     console.log('resize stop')
                 }
             })
