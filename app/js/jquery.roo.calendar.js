@@ -86,7 +86,7 @@
             $(document).keydown(function(e){
     
                 if(e.which===67 && e.ctrlKey === true){
-                    let $f = $(self.element).find('.event.focused');
+                    let $f = $('.event.focused', self.element);
                     self.clipboard = [];
                     $.each($f, function(index, ev){
                         let height = $(ev)[0].clientHeight/self.settings.cellHeight
@@ -235,84 +235,59 @@
 
             return hour;
         },
-        resizeEvent:function(event){
-            let $event = $(event);
-            const pStart = event.offsetTop;
-            const pEnd = event.clientHeight + event.offsetTop;
-            let colCount = 1;
-            let self = this;
-
-            $event.css('width',this.settings.cellWidth- 3) + 'px',
-
-            $eventGroup = $(this.element).find(`.event[data-pos-x="${$event.data('pos-x')}"]`);
-            let group = [];
-           $.each($eventGroup, function(index, ev){   
-                let $ev = $(ev);
-               const cStart = ev.offsetTop;
-               const cEnd = ev.clientHeight + ev.offsetTop;
-               $ev.css('width',self.settings.cellWidth- 3) + 'px';
-               if(ev != event){
-                    if((pStart<=cStart && pEnd<=cEnd) || (pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
-                        console.log(pStart, cStart, pEnd, cEnd)
-                        group.push(ev);
-                    }
-               }else{
-                   console.log('same')
-               }
-           })
-           group.push(event);
-           colCount = group.length;
-           colWidth = Math.floor(self.settings.cellWidth/colCount);
-           $.each(group, function(i,ge){
-                let $ge = $(ge);
-                $ge.css({
-                    'width':colWidth + 'px',
-                    'margin-left': (colWidth * i) + 'px'
-                });
-
-           })
-           
+        getEventSE: function(event) {
+            const start = event.offsetTop;
+            const end = event.clientHeight + event.offsetTop;
+            return {start:start, end:end};
         },
         eventResizeWidth:function(){
-            let self = this;
-            $.each($('.event'), function(index, event){
-
-                let $event = $(event);
-                const pStart = event.offsetTop;
-                const pEnd = event.clientHeight + event.offsetTop;
-                let colCount = 1;
-                
-
-                $event.css('width',self.settings.cellWidth- 3) + 'px',
-
-                $eventGroup = $(self.element).find(`.event[data-pos-x="${$event.data('pos-x')}"]`);
-                let group = [];
-                
-                $.each($eventGroup, function(index, ev){   
-                        let $ev = $(ev);
-                    const cStart = ev.offsetTop;
-                    const cEnd = ev.clientHeight + ev.offsetTop;
-                    $ev.css('width',self.settings.cellWidth- 3) + 'px';
-                    if(ev != event){
-                            if((pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
-                                console.log(pStart, cStart, pEnd, cEnd)
-                                group.push(ev);
-                            }
-                    }else{
-                        console.log('same')
-                    }
+            const self = this;
+            const columns = self.settings.resource || self.settings.days;
+            let counter = 0;
+            $('.event', this.element).attr('data-group-x',"");
+            for(colI = 0; colI < columns.length; colI++){
+                $eventGroup = $(`.event[data-pos-x="${colI}"]`, self.element);
+                $.each($eventGroup, function(pEventIndex, parentEvent){
+                    const pSE = self.getEventSE(parentEvent);
+                    counter++;
+                    $.each($eventGroup, function(cEventIndex, childEvent){
+                        const $cEvent = $(childEvent);
+                        const cSE = self.getEventSE(childEvent);
+                        $cEvent.css('width',self.settings.cellWidth- 3) + 'px';
+                        if(childEvent != parentEvent){
+                                if((pSE.start >=cSE.start && pSE.end<=cSE.end) || (pSE.start<=cSE.start && pSE.end>=cSE.end) || (pSE.end>=cSE.start && pSE.start<=cSE.end)){
+                                    // console.log("Parent :", pSE.start,pSE.end, "Child :", cSE.start , cSE.end, counter)
+                                    // group.push(ev);
+                                    if($cEvent.attr('data-group-x')){
+                                        $cEvent.attr('data-group-x', 'group-' + counter)
+                                    }
+                                    
+                                    
+                                }
+                        }else{
+                            $cEvent.attr('data-group-x', 'group-' + counter)
+                            // console.log('same')
+                        }
+                     })
                 })
-                group.push(event);
-                colCount = group.length;
-                colWidth = Math.floor(self.settings.cellWidth/colCount);
-                $.each(group, function(i,ge){
-                        let $ge = $(ge);
-                        $ge.css({
+            }
+
+            $.each($('.event'), function(i,pev){
+                const group = $(pev).attr('data-group-x');
+                const $groupEvent = $(`.event[data-group-x="${group}"]`);
+                let $pev = $(pev);
+               
+                const colCount = $groupEvent.length;
+                const colWidth = Math.floor(self.settings.cellWidth/colCount);
+                $groupEvent.each(function(ind, ev){
+                   const $ev = $(ev);
+                    $ev.css({
                             'width':(colWidth - 3) + 'px',
-                            'margin-left': (colWidth * i) + 'px'
+                            'margin-left': (colWidth * ind) + 'px'
                         });
-
                 })
+              
+
             })
         },
         printDetails:function(event){
@@ -323,7 +298,7 @@
             $event.attr('data-pos-y', yPos);
             $event.attr('data-pos-x', xPos);
             $event.data({'pos-y':yPos, 'pos-x':xPos});
-            $event.find('span').text(this.settings.timePos[yPos] + ' - ' + this.settings.timePos[yPos + height])
+            $('span', $event).text(this.settings.timePos[yPos] + ' - ' + this.settings.timePos[yPos + height])
         },
         add:function(x,y, timelenght){
             
@@ -344,8 +319,8 @@
             $event.css(position)
             $event.attr('data-pos-y', y);
             $event.attr('data-pos-x', x);
-            $event.find('span').text(self.settings.timePos[y] + ' - ' + self.settings.timePos[y + timelenght])
-            $(this.element).find('.rc-event-list').append($event);
+            $('span',$event).text(self.settings.timePos[y] + ' - ' + self.settings.timePos[y + timelenght])
+            $('.rc-event-list', this.element).append($event);
             $event.draggable({
                 grid:[self.settings.cellWidth,self.settings.cellHeight], 
                 containment:'parent',
