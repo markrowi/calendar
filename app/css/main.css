@@ -111,6 +111,13 @@ body{
     opacity: 0;
     transition: .5s ease all;
     color:white;
+    display: block;
+}
+
+.remove-event::before,
+.remove-event::after {
+    content: "";
+    clear: both;
 }
 
 .event:hover .remove-event {

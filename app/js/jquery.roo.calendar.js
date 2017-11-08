@@ -58,6 +58,7 @@
 
             $(this.element).on('click','.remove-event', function(){
                 $(this).closest('.event').remove();
+                self.eventResizeWidth();
             })
 
            
@@ -276,7 +277,6 @@
             let self = this;
             $.each($('.event'), function(index, event){
 
-            
                 let $event = $(event);
                 const pStart = event.offsetTop;
                 const pEnd = event.clientHeight + event.offsetTop;
@@ -287,31 +287,32 @@
 
                 $eventGroup = $(self.element).find(`.event[data-pos-x="${$event.data('pos-x')}"]`);
                 let group = [];
-            $.each($eventGroup, function(index, ev){   
-                    let $ev = $(ev);
-                const cStart = ev.offsetTop;
-                const cEnd = ev.clientHeight + ev.offsetTop;
-                $ev.css('width',self.settings.cellWidth- 3) + 'px';
-                if(ev != event){
-                        if((pStart<=cStart && pEnd<=cEnd) || (pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
-                            console.log(pStart, cStart, pEnd, cEnd)
-                            group.push(ev);
-                        }
-                }else{
-                    console.log('same')
-                }
-            })
-            group.push(event);
-            colCount = group.length;
-            colWidth = Math.floor(self.settings.cellWidth/colCount);
-            $.each(group, function(i,ge){
-                    let $ge = $(ge);
-                    $ge.css({
-                        'width':colWidth + 'px',
-                        'margin-left': (colWidth * i) + 'px'
-                    });
+                
+                $.each($eventGroup, function(index, ev){   
+                        let $ev = $(ev);
+                    const cStart = ev.offsetTop;
+                    const cEnd = ev.clientHeight + ev.offsetTop;
+                    $ev.css('width',self.settings.cellWidth- 3) + 'px';
+                    if(ev != event){
+                            if((pStart>=cStart && pEnd<=cEnd) || (pStart<=cStart && pEnd>=cEnd) || (pEnd>=cStart && pStart<=cEnd)){
+                                console.log(pStart, cStart, pEnd, cEnd)
+                                group.push(ev);
+                            }
+                    }else{
+                        console.log('same')
+                    }
+                })
+                group.push(event);
+                colCount = group.length;
+                colWidth = Math.floor(self.settings.cellWidth/colCount);
+                $.each(group, function(i,ge){
+                        let $ge = $(ge);
+                        $ge.css({
+                            'width':(colWidth - 3) + 'px',
+                            'margin-left': (colWidth * i) + 'px'
+                        });
 
-            })
+                })
             })
         },
         printDetails:function(event){
@@ -329,7 +330,8 @@
             
             let col = this.settings.resource || this.settings.days;
             let $event = $(`<div class="event">
-                <span></span><div class="remove-event pull-right">x</div>
+            <div class="remove-event pull-right">x</div>
+                <span></span>
             </div>`);
             let self = this;
             let position = {
@@ -352,7 +354,7 @@
                     self.printDetails(this);
                 },
                 stop:function(){
-                    // self.eventResizeWidth();
+                    self.eventResizeWidth();
                     console.log('drag stop')
                 }
             }).resizable({
@@ -364,11 +366,11 @@
                     self.printDetails(this);
                 },
                 stop:function(){
-                    // self.eventResizeWidth();
+                    self.eventResizeWidth();
                     console.log('resize stop')
                 }
             })
-            
+            this.eventResizeWidth();
         },
         addEntry:function(args){
 
