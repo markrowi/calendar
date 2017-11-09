@@ -262,7 +262,7 @@
             return (a.end >= b.start && a.start <= b.end) || (a.start>=b.start && a.end<=b.end) || (a.start<=b.start && a.end>=b.end);
         },
         checkCollision: function (eventArr) {
-            var arr = []
+            var arr = [];
             for (var i = 0; i < eventArr.length; i++) {
                 arr[i] = {cols:[],colsBefore:[]}
                 eventArr[i].cols = [];
@@ -272,7 +272,7 @@
                         eventArr[i].cols.push(j);
                         arr[i].cols.push(j);
                         if(i>j) {
-                            arr[i].colsBefore.push(j)
+                            arr[i].colsBefore.push(j);
                             eventArr[i].colsBefore.push(j); //also list which of the conflicts came before
                         }
                     }
@@ -284,68 +284,85 @@
            
             return eventArr;
         },
+        widthEvent:function(arr, elemIndex){
+            var colGroup =arr;
+            finalCount = 0;
+            for(let i=0;i<colGroup.length;i++){
+                if(elemIndex!==i&& colGroup[elemIndex]){
+                    var counter = 0;
+                    for (var c = 0; c < colGroup[elemIndex].cols.length; c++) {
+                        var evCol = colGroup[elemIndex].cols[c]; // [0,1,2] c = index
+                        if(colGroup[i].cols.indexOf(evCol)>-1)counter++;
+                    }
+                    // colGroup[elemIndex]
+                }
+                finalCount = finalCount < counter ? counter : finalCount;
+            }
+            return finalCount;
+        },
         updateEvents:function(eventArr) {
             updateEvents = $('.events')
             arr = this.checkCollision(eventArr);
-            // var arr = [];
-            // console.log(this.settings.cellWidth)
-            // for(i=0; i<arr.length;i++){
-            //     $event = $(arr[i]);
-            //     var width = Math.floor(this.settings.cellWidth/arr[i].cols.length);
-            //     $event.css({
-            //         "width":width + 'px', 
-            //         "margin-left":(width * arr[i].colsBefore.length) + 'px'
-            //     })
+            console.log( arr)
+            for(i=0; i<arr.length;i++){
+                console.log(i)
+                $event = $(arr[i]);
+                var width = Math.floor(this.settings.cellWidth/this.widthEvent(arr, i));
+                $event.css({
+                    "width":width + 'px', 
+                    "margin-left":(width * arr[i].colsBefore.length) + 'px'
+                })
                 
+            }
+            // // console.log('eventArr',eventArr);
+            // var arr=eventArr; //clone the array
+            // for(var i=0; i<arr.length; i++){
+            //     var el=arr[i];
+            //     // el.color = getRandomColor();
+            //     // el.height = (el.end - el.start) * 2 + 'px';
+            //     // el.top = (el.start) * 2 + 'px';
+                
+            //     if(i>0 && el.colsBefore.length>0){ //check column if not the first event and the event has collisions with prior events
+            //         if(arr[i-1].column>0){ //if previous event wasn't in the first column, there may be space to the left of it
+            //             for(var j=0;j<arr[i-1].column;j++){ //look through all the columns to the left of the previous event
+            //                 if(el.colsBefore.indexOf(i-(j+2))===-1){ //the current event doesn't collide with the event being checked...
+            //                 el.column=arr[i-(j+2)].column; //...and can be put in the same column as it
+            //                 }
+            //             }
+            //             if(typeof el.column==='undefined') el.column=arr[i-1].column+1; //if there wasn't any free space, but it ito the right of the previous event
+            //         }else{
+            //             var column=0;
+            //         for(var j=0;j<el.colsBefore.length;j++){ //go through each column to see where's space...
+            //             if(arr[el.colsBefore[el.colsBefore.length-1-j]].column==column) column++;
+            //         }
+            //             el.column=column;
+            //         }
+            //     }else el.column=0;
             // }
-            // console.log('eventArr',eventArr);
-            var arr=eventArr; //clone the array
-            for(var i=0; i<arr.length; i++){
-                var el=arr[i];
-                // el.color = getRandomColor();
-                // el.height = (el.end - el.start) * 2 + 'px';
-                // el.top = (el.start) * 2 + 'px';
-                
-                if(i>0 && el.colsBefore.length>0){ //check column if not the first event and the event has collisions with prior events
-                    if(arr[i-1].column>0){ //if previous event wasn't in the first column, there may be space to the left of it
-                        for(var j=0;j<arr[i-1].column;j++){ //look through all the columns to the left of the previous event
-                        if(el.colsBefore.indexOf(i-(j+2))===-1){ //the current event doesn't collide with the event being checked...
-                            el.column=arr[i-(j+2)].column; //...and can be put in the same column as it
-                        }
-                    }
-                    if(typeof el.column==='undefined') el.column=arr[i-1].column+1; //if there wasn't any free space, but it ito the right of the previous event
-                    }else{
-                        var column=0;
-                    for(var j=0;j<el.colsBefore.length;j++){ //go through each column to see where's space...
-                        if(arr[el.colsBefore[el.colsBefore.length-1-j]].column==column) column++;
-                    }
-                        el.column=column;
-                    }
-                }else el.column=0;
-            }
-            //We need the column for every event before we can determine the appropriate width and left-position, so this is in a different for-loop:
-            for(var i=0; i<arr.length; i++){
-                arr[i].totalColumns=0;
-                if(arr[i].cols.length>1){ //if event collides
-                    var conflictGroup=[]; //store here each column in the current event group
-                    var conflictingColumns=[]; //and here the column of each of the events in the group
-                    addConflictsToGroup(arr[i]);
-                    function addConflictsToGroup(a){
-                        for(k=0;k<a.cols.length;k++){
-                            if(conflictGroup.indexOf(a.cols[k])===-1){ //don't add same event twice to avoid infinite loop
-                            conflictGroup.push(a.cols[k]);
-                            conflictingColumns.push(arr[a.cols[k]].column);
-                            addConflictsToGroup(arr[a.cols[k]]); //check also the events this event conflicts with
-                            }
-                        }
-                    }
-                    arr[i].totalColumns=Math.max.apply(null, conflictingColumns); //set the greatest value as number of columns
-                }
-                var width = Math.floor(((this.settings.cellWidth) /(arr[i].totalColumns+1)) - 5)+'px';
-                var left = Math.floor(((this.settings.cellWidth)/(arr[i].totalColumns+1)*arr[i].column))+'px';
+            // //We need the column for every event before we can determine the appropriate width and left-position, so this is in a different for-loop:
+            // for(var i=0; i<arr.length; i++){
+            //     arr[i].totalColumns=0;
+            //     if(arr[i].cols.length>1){ //if event collides
+            //         var conflictGroup=[]; //store here each column in the current event group
+            //         var conflictingColumns=[]; //and here the column of each of the events in the group
+            //         addConflictsToGroup(arr[i]);
+            //         function addConflictsToGroup(a){
+            //             for(k=0;k<a.cols.length;k++){
+            //                 if(conflictGroup.indexOf(a.cols[k])===-1){ //don't add same event twice to avoid infinite loop
+            //                 conflictGroup.push(a.cols[k]);
+            //                 conflictingColumns.push(arr[a.cols[k]].column);
+            //                 addConflictsToGroup(arr[a.cols[k]]); //check also the events this event conflicts with
+            //                 }
+            //             }
+            //         }
+            //         arr[i].totalColumns=Math.max.apply(null, conflictingColumns); //set the greatest value as number of columns
+            //     }
+            //     console.log(arr[i].column)
+            //     var width = Math.floor(((this.settings.cellWidth) /(arr[i].totalColumns+1)) - 5);
+            //     var left = (width * arr[i].column);
             
-                $(arr[i]).css({"width":width, "margin-left":left});
-            }
+            //     $(arr[i]).css({"width":width + 'px', "margin-left":left + 'px'});
+            // }
             return arr;
         },
         sortEvents($events){
@@ -372,7 +389,7 @@
             let yPos = (event.offsetTop/this.settings.cellHeight);
             let xPos = Math.floor(event.offsetLeft/this.settings.cellWidth);
             let height = Math.round(event.clientHeight/this.settings.cellHeight);
-            console.log(event.offsetLeft, (event.offsetLeft/this.settings.cellWidth))
+            // console.log(event.offsetLeft, (event.offsetLeft/this.settings.cellWidth))
             $event.attr('data-pos-y', yPos);
             $event.attr('data-pos-x', xPos);
             $event.data({'pos-y':yPos, 'pos-x':xPos});
