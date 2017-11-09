@@ -284,7 +284,7 @@
            
             return eventArr;
         },
-        widthEvent:function(arr, elemIndex){
+        getEventColumn:function(arr, elemIndex){
             var colGroup =arr;
             finalCount = 0;
             for(let i=0;i<colGroup.length;i++){
@@ -300,17 +300,35 @@
             }
             return finalCount;
         },
+        getEventLeft:function(){
+
+        },
         updateEvents:function(eventArr) {
             updateEvents = $('.events')
             arr = this.checkCollision(eventArr);
-            console.log( arr)
+            // console.log(arr)
             for(i=0; i<arr.length;i++){
                 console.log(i)
                 $event = $(arr[i]);
-                var width = Math.floor(this.settings.cellWidth/this.widthEvent(arr, i));
+                $event.css({
+                    "width":this.settings.cellWidth -3 + 'px', 
+                    "margin-left":0 + 'px'
+                })
+                arr[i].column = this.getEventColumn(arr, i);
+                
+                var beforeColumn = arr[i].column;
+                var beforeElement = null;
+                if(arr[i].colsBefore.length>0){
+                    beforeColumn = arr[arr[i].colsBefore[0]].column
+                    beforeElement = arr[arr[i].colsBefore[0]]
+                }
+                console.log(beforeColumn)
+                var beforeColumnWidth = Math.floor(this.settings.cellWidth/beforeColumn);
+                var left = (beforeColumnWidth * arr[i].colsBefore.length);
+                var width = Math.floor(this.settings.cellWidth/arr[i].column);
                 $event.css({
                     "width":width + 'px', 
-                    "margin-left":(width * arr[i].colsBefore.length) + 'px'
+                    "margin-left":beforeElement && beforeElement.colsBefore.length>=1?beforeElement.colsBefore.length>=2?beforeColumnWidth:0:left + 'px'
                 })
                 
             }
