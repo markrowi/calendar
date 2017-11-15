@@ -298,23 +298,64 @@
                 }
                 finalCount = finalCount < counter ? counter : finalCount;
             }
-            return finalCount;
+            return finalCount || 1;
         },
-        getEventLeft:function(){
+        getEventLeft:function(arr, index){
+            var initialCol = arr[index].column;
+            var event = arr[index];
 
+                for (var c = 0; c < event.cols.length; c++) {
+                    let cevent = arr[event.cols[c]];
+
+                    let h = cevent.column;
+                    
+                    if(h > initialCol){
+                        initialCol = h;
+                    }
+                    
+                }
+                
+            return initialCol;
+        },
+        getHigherColumn:function(arr, index){
+            var initialCol = arr[index].column;
+            var event = arr[index];
+
+                for (var c = 0; c < event.cols.length; c++) {
+                    let cevent = arr[event.cols[c]];
+
+                    let h = cevent.column;
+                    
+                    if(h > initialCol){
+                        initialCol = h;
+                    }
+                    
+                }
+                
+            return initialCol;
+            
         },
         updateEvents:function(eventArr) {
             updateEvents = $('.events')
             arr = this.checkCollision(eventArr);
-            // console.log(arr)
+            
+            // Insert all column
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].column = this.getEventColumn(arr, i);
+            }
+            //Insert all left
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].left = this.getEventLeft(arr, i);
+            }
+
             for(i=0; i<arr.length;i++){
-                console.log(i)
+                
                 $event = $(arr[i]);
                 $event.css({
                     "width":this.settings.cellWidth -3 + 'px', 
                     "margin-left":0 + 'px'
                 })
-                arr[i].column = this.getEventColumn(arr, i);
+                // arr[i].column = this.getEventColumn(arr, i);
                 
                 var beforeColumn = arr[i].column;
                 var beforeElement = null;
@@ -322,13 +363,26 @@
                     beforeColumn = arr[arr[i].colsBefore[0]].column
                     beforeElement = arr[arr[i].colsBefore[0]]
                 }
-                console.log(beforeColumn)
-                var beforeColumnWidth = Math.floor(this.settings.cellWidth/beforeColumn);
+                var higherColumn = this.getHigherColumn(arr, i);
+                var beforeColumnWidth = Math.floor(this.settings.cellWidth/higherColumn);
                 var left = (beforeColumnWidth * arr[i].colsBefore.length);
-                var width = Math.floor(this.settings.cellWidth/arr[i].column);
+                var width = Math.floor(this.settings.cellWidth/higherColumn);
+                // if(higherColumn<=3){
+                    if(beforeElement && beforeElement.colsBefore.length===1 && arr[i].colsBefore.length<2){
+                        left = 0;
+                    }
+                    
+                // }else{
+                //     // left = (beforeColumnWidth * arr[i].colsBefore.length + (beforeColumn||beforeElement.colsBefore.length));
+                // }
+                
+                console.log("Index : ", i, 'left : ', left, 'higherColumn : ',higherColumn, 'column : ', arr[i].column, 'beforeColumnWidth' , beforeColumnWidth, "cols : ", arr[i].cols, 'colsBefore : ', arr[i].colsBefore);
                 $event.css({
                     "width":width + 'px', 
-                    "margin-left":beforeElement && beforeElement.colsBefore.length>=1?beforeElement.colsBefore.length>=2?beforeColumnWidth:0:left + 'px'
+                    // "margin-left":(beforeElement && beforeElement.colsBefore.length===1?
+                    //     arr[i].colsBefore.length>=2?
+                    //     left:0:left) + 'px'
+                    "margin-left":left + 'px'
                 })
                 
             }
