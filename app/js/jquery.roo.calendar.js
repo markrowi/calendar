@@ -301,21 +301,69 @@
             return finalCount || 1;
         },
         getEventLeft:function(arr, index){
-            var initialCol = arr[index].column;
             var event = arr[index];
-
-                for (var c = 0; c < event.cols.length; c++) {
-                    let cevent = arr[event.cols[c]];
-
-                    let h = cevent.column;
+            var initialLeft = event.cols.indexOf(index);
+            var allLeft = [];
+            
+            let lowestLeft;
+            for (let i = 0; i < event.colsBefore.length; i++) {
+                const element = arr[event.colsBefore[i]];
+                allLeft.push(element.left)
+                if(lowestLeft===undefined || lowestLeft>=element.left){
                     
-                    if(h > initialCol){
-                        initialCol = h;
-                    }
+                    lowestLeft = element.left;
                     
                 }
                 
-            return initialCol;
+            }
+            console.log(index, 'lowestLeft', lowestLeft,'initialLeft',initialLeft, 'allLeft', allLeft.sort())
+
+            // event.cols.indexOf(index)
+                // if(event.colsBefore.length>0){
+                //     for (let cb = 0; cb < event.colsBefore.length; cb++) {
+                //         const element = arr[cb];
+                        
+                //         if(element.left!==undefined){
+                //                 initialLeft+=element.left || 1;
+                //         }
+                        
+                //     }
+
+                //     // for (var c = 0; c < event.cols.length; c++) {
+                //     //     let cevent = arr[event.cols[c]];
+    
+                //     //     let h = cevent.column;
+                        
+                //     //     if(h > initialLeft){
+                //     //         initialLeft = h;
+                //     //     }
+                        
+                //     // }
+                // }
+
+                // if(initialLeft===1){
+
+                // }
+            // if(lowestLeft>0){initialLeft=0}    
+            if(lowestLeft>0) {
+                initialLeft = 0;    
+            }
+            if(event.column>2){
+                
+                for (let i = 0; i < allLeft.length; i++) {
+                    const element = allLeft[i];
+                    if(element !== (i + lowestLeft)){
+                        initialLeft = (i + lowestLeft);
+                        break;
+                    }
+                }
+            }
+            
+
+            
+            // if(initialLeft ===  lowestLeft) initialLeft = initialLeft -lowestLeft;
+            
+            return initialLeft;
         },
         getHigherColumn:function(arr, index){
             var initialCol = arr[index].column;
@@ -365,18 +413,18 @@
                 }
                 var higherColumn = this.getHigherColumn(arr, i);
                 var beforeColumnWidth = Math.floor(this.settings.cellWidth/higherColumn);
-                var left = (beforeColumnWidth * arr[i].colsBefore.length);
+                var left = (beforeColumnWidth * arr[i].left);//(beforeColumnWidth * arr[i].colsBefore.length);
                 var width = Math.floor(this.settings.cellWidth/higherColumn);
                 // if(higherColumn<=3){
-                    if(beforeElement && beforeElement.colsBefore.length===1 && arr[i].colsBefore.length<2){
-                        left = 0;
-                    }
+                    // if(beforeElement && beforeElement.colsBefore.length===1 && arr[i].colsBefore.length<2){
+                    //     left = 0;
+                    // }
                     
                 // }else{
                 //     // left = (beforeColumnWidth * arr[i].colsBefore.length + (beforeColumn||beforeElement.colsBefore.length));
                 // }
                 
-                console.log("Index : ", i, 'left : ', left, 'higherColumn : ',higherColumn, 'column : ', arr[i].column, 'beforeColumnWidth' , beforeColumnWidth, "cols : ", arr[i].cols, 'colsBefore : ', arr[i].colsBefore);
+                console.log("Index : ", i, 'left : ', arr[i].left, 'higherColumn : ',higherColumn, 'column : ', arr[i].column, 'beforeColumnWidth' , beforeColumnWidth, "cols : ", arr[i].cols, 'colsBefore : ', arr[i].colsBefore);
                 $event.css({
                     "width":width + 'px', 
                     // "margin-left":(beforeElement && beforeElement.colsBefore.length===1?
